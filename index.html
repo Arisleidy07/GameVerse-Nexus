@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="GameVerse Nexus: Explora las compañías legendarias del mundo de los videojuegos." />
+  <meta name="theme-color" content="#0a0f1f" />
+  <title>GameVerse Nexus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" id="header">
+    <div class="container nav">
+      <a href="index.html" class="logo" aria-label="GameVerse Nexus - Inicio">
+        <span class="logo-text">GameVerse Nexus</span>
+      </a>
+
+      <button class="nav-toggle" aria-controls="primary-nav" aria-expanded="false">
+        <span class="sr-only">Abrir menú</span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+
+      <nav id="primary-nav" class="primary-nav" aria-label="Principal">
+        <a href="index.html" class="nav-link active">Inicio</a>
+        <a href="empresas.html" class="nav-link">Empresas</a>
+        <a href="nosotros.html" class="nav-link">Nosotros</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="inicio" class="hero" aria-label="Inicio">
+      <div class="video-wrap">
+        <video id="bg-video" class="bg-video" playsinline muted loop autoplay preload="auto">
+          <source src="VIDEO/Scene.mp4" type="video/mp4" />
+        </video>
+        <div class="led-gradient" aria-hidden="true"></div>
+        <div class="grid-overlay" aria-hidden="true"></div>
+      </div>
+      <div class="hero-content">
+        <div class="glass-card">
+          <h1>GAMEVERSE NEXUS</h1>
+          <p>El punto de encuentro de las compañías más icónicas del gaming.</p>
+          <a class="btn btn-primary" href="empresas.html">Explora las Empresas</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>Proyecto realizado por Aris, Kodland – Curso de HTML</p>
+      <p>© 2025 GameVerse Nexus</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

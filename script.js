@@ -1,0 +1,193 @@
+document.addEventListener('DOMContentLoaded', function () {
+  // Mobile nav toggle
+  var toggle = document.querySelector('.nav-toggle');
+  var nav = document.getElementById('primary-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', function () {
+      var open = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  // ---------- Lightbox (Full Image Viewer) ----------
+  function Lightbox() {
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'lightbox';
+    this.overlay.setAttribute('aria-hidden', 'true');
+    this.overlay.setAttribute('role', 'dialog');
+    this.overlay.setAttribute('aria-modal', 'true');
+    this.overlay.innerHTML = [
+      '<div class="lightbox-header">',
+      '  <div class="lightbox-title"></div>',
+      '  <button class="lightbox-close" aria-label="Cerrar">Cerrar</button>',
+      '</div>',
+      '<div class="lightbox-main">',
+      '  <div class="lightbox-img-wrap">',
+      '    <img class="lightbox-img" alt="" />',
+      '  </div>',
+      '  <div class="lightbox-controls">',
+      '    <button class="lightbox-arrow prev" aria-label="Anterior">‹</button>',
+      '    <button class="lightbox-arrow next" aria-label="Siguiente">›</button>',
+      '  </div>',
+      '  <div class="lightbox-zoom">',
+      '    <button class="zoom-in" aria-label="Acercar">+</button>',
+      '    <button class="zoom-out" aria-label="Alejar">−</button>',
+      '    <button class="zoom-reset" aria-label="Restablecer">100%</button>',
+      '  </div>',
+      '</div>',
+      '<div class="lightbox-thumbs"></div>'
+    ].join('');
+    document.body.appendChild(this.overlay);
+
+    this.titleEl = this.overlay.querySelector('.lightbox-title');
+    this.imgEl = this.overlay.querySelector('.lightbox-img');
+    this.thumbsEl = this.overlay.querySelector('.lightbox-thumbs');
+    this.closeBtn = this.overlay.querySelector('.lightbox-close');
+    this.prevBtn = this.overlay.querySelector('.lightbox-arrow.prev');
+    this.nextBtn = this.overlay.querySelector('.lightbox-arrow.next');
+    this.zoomInBtn = this.overlay.querySelector('.zoom-in');
+    this.zoomOutBtn = this.overlay.querySelector('.zoom-out');
+    this.zoomResetBtn = this.overlay.querySelector('.zoom-reset');
+    this.mainEl = this.overlay.querySelector('.lightbox-main');
+
+    this.items = [];
+    this.index = 0;
+    this.scale = 1;
+    this.lastFocused = null;
+
+    var self = this;
+    this.close = function () {
+      self.overlay.classList.remove('open');
+      self.overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', self._onKey);
+      self._setScale(1);
+      // Restore previous focus
+      if (self.lastFocused && typeof self.lastFocused.focus === 'function') {
+        self.lastFocused.focus();
+      }
+    };
+    this._onKey = function (e) {
+      if (e.key === 'Escape') return self.close();
+      if (e.key === 'ArrowLeft') return self.prev();
+      if (e.key === 'ArrowRight') return self.next();
+    };
+    this._setScale = function (val) {
+      self.scale = Math.max(0.5, Math.min(3, val));
+      self.imgEl.style.transform = 'scale(' + self.scale + ')';
+    };
+    this._render = function () {
+      if (!self.items.length) return;
+      var item = self.items[self.index];
+      self.imgEl.src = item.src;
+      self.imgEl.alt = item.title || '';
+      self.titleEl.textContent = item.title || '';
+      self._setScale(1);
+      // Preload neighbours for smoother nav
+      var next = new Image();
+      next.src = self.items[(self.index + 1) % self.items.length].src;
+      var prev = new Image();
+      prev.src = self.items[(self.index - 1 + self.items.length) % self.items.length].src;
+      // Thumbs
+      self.thumbsEl.innerHTML = '';
+      self.items.forEach(function (it, i) {
+        var t = document.createElement('div');
+        t.className = 'lightbox-thumb' + (i === self.index ? ' active' : '');
+        var img = document.createElement('img');
+        img.src = it.src;
+        img.alt = it.title || '';
+        t.appendChild(img);
+        t.addEventListener('click', function () { self.go(i); });
+        self.thumbsEl.appendChild(t);
+      });
+    };
+    this.go = function (i) {
+      if (!self.items.length) return;
+      self.index = (i + self.items.length) % self.items.length;
+      self._render();
+    };
+    this.prev = function () { self.go(self.index - 1); };
+    this.next = function () { self.go(self.index + 1); };
+    this._collectFromRoot = function (rootEl) {
+      var figures = Array.prototype.slice.call(rootEl.querySelectorAll('.gallery figure.tile'));
+      var withImgs = figures.filter(function (f) { return f.querySelector('.img-box img'); });
+      return withImgs;
+    };
+    this.openFromCompany = function (companyEl, startFigureEl) {
+      var withImgs = self._collectFromRoot(companyEl);
+      if (!withImgs.length) return;
+      self.items = withImgs.map(function (f) {
+        var img = f.querySelector('.img-box img');
+        var cap = f.querySelector('figcaption');
+        return { src: img.getAttribute('src'), title: cap ? cap.textContent.trim() : '' };
+      });
+      var startIndex = withImgs.indexOf(startFigureEl);
+      self.index = Math.max(0, startIndex);
+      // Save focus and open
+      self.lastFocused = document.activeElement;
+      self.overlay.classList.add('open');
+      self.overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', self._onKey);
+      self._render();
+      // Focus close button for accessibility
+      self.closeBtn.focus();
+    };
+
+    // Events
+    this.closeBtn.addEventListener('click', this.close);
+    this.prevBtn.addEventListener('click', this.prev);
+    this.nextBtn.addEventListener('click', this.next);
+    this.zoomInBtn.addEventListener('click', function () { self._setScale(self.scale + 0.2); });
+    this.zoomOutBtn.addEventListener('click', function () { self._setScale(self.scale - 0.2); });
+    this.zoomResetBtn.addEventListener('click', function () { self._setScale(1); });
+    // Click outside image to close
+    this.overlay.addEventListener('click', function (e) {
+      var wrap = self.overlay.querySelector('.lightbox-img-wrap');
+      if (!wrap.contains(e.target) && !e.target.closest('.lightbox-arrow') && !e.target.closest('.lightbox-zoom')) {
+        self.close();
+      }
+    });
+
+    // Touch swipe gestures on main area
+    var touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0, dragging = false;
+    function onTouchStart(ev) {
+      var t = ev.touches[0];
+      touchStartX = t.clientX; touchStartY = t.clientY; dragging = true;
+    }
+    function onTouchMove(ev) {
+      if (!dragging) return;
+      var t = ev.touches[0];
+      touchEndX = t.clientX; touchEndY = t.clientY;
+    }
+    function onTouchEnd() {
+      if (!dragging) return;
+      var dx = touchEndX - touchStartX;
+      var dy = touchEndY - touchStartY;
+      dragging = false;
+      // Horizontal swipe threshold
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) self.next(); else self.prev();
+      }
+      touchStartX = touchStartY = touchEndX = touchEndY = 0;
+    }
+    this.mainEl.addEventListener('touchstart', onTouchStart, { passive: true });
+    this.mainEl.addEventListener('touchmove', onTouchMove, { passive: true });
+    this.mainEl.addEventListener('touchend', onTouchEnd);
+  }
+
+  var lightbox = new Lightbox();
+
+  // Delegate clicks on gallery tiles
+  document.addEventListener('click', function (e) {
+    var imgBox = e.target.closest('.gallery .tile .img-box');
+    if (!imgBox) return;
+    var img = imgBox.querySelector('img');
+    if (!img) return; // No image yet (placeholder)
+    var figure = imgBox.closest('figure.tile');
+    var company = imgBox.closest('.section.company');
+    if (!figure || !company) return;
+    e.preventDefault();
+    lightbox.openFromCompany(company, figure);
+  });
+});
