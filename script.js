@@ -97,9 +97,18 @@ document.addEventListener('DOMContentLoaded', function () {
         img.src = it.src;
         img.alt = it.title || '';
         t.appendChild(img);
-        t.addEventListener('click', function () { self.go(i); });
+        t.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          self.go(i);
+        });
         self.thumbsEl.appendChild(t);
       });
+      // Ensure active thumbnail is visible
+      var activeThumb = self.thumbsEl.querySelector('.lightbox-thumb.active');
+      if (activeThumb && typeof activeThumb.scrollIntoView === 'function') {
+        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
     };
     this.go = function (i) {
       if (!self.items.length) return;
@@ -109,19 +118,30 @@ document.addEventListener('DOMContentLoaded', function () {
     this.prev = function () { self.go(self.index - 1); };
     this.next = function () { self.go(self.index + 1); };
     this._collectFromRoot = function (rootEl) {
-      var figures = Array.prototype.slice.call(rootEl.querySelectorAll('.gallery figure.tile'));
-      var withImgs = figures.filter(function (f) { return f.querySelector('.img-box img'); });
+      // Collect gallery figures, company logo, and founder portraits in DOM order
+      var nodes = Array.prototype.slice.call(
+        rootEl.querySelectorAll('.gallery figure.tile, .img-box.img-xl, .portrait.img-box')
+      );
+      var withImgs = nodes.filter(function (n) { return n.querySelector('img'); });
       return withImgs;
     };
-    this.openFromCompany = function (companyEl, startFigureEl) {
+    this.openFromCompany = function (companyEl, startHolderEl) {
       var withImgs = self._collectFromRoot(companyEl);
       if (!withImgs.length) return;
-      self.items = withImgs.map(function (f) {
-        var img = f.querySelector('.img-box img');
-        var cap = f.querySelector('figcaption');
-        return { src: img.getAttribute('src'), title: cap ? cap.textContent.trim() : '' };
+      self.items = withImgs.map(function (el) {
+        var img = el.querySelector('img');
+        var title = '';
+        if (el.matches('figure.tile')) {
+          var cap = el.querySelector('figcaption');
+          title = cap ? cap.textContent.trim() : (img ? img.alt : '');
+        } else if (el.classList.contains('img-xl')) {
+          title = img ? img.alt || 'Logo' : 'Logo';
+        } else if (el.classList.contains('portrait')) {
+          title = img ? img.alt || 'Fundador' : 'Fundador';
+        }
+        return { src: img ? img.getAttribute('src') : '', title: title };
       });
-      var startIndex = withImgs.indexOf(startFigureEl);
+      var startIndex = withImgs.indexOf(startHolderEl);
       self.index = Math.max(0, startIndex);
       // Save focus and open
       self.lastFocused = document.activeElement;
@@ -141,10 +161,13 @@ document.addEventListener('DOMContentLoaded', function () {
     this.zoomInBtn.addEventListener('click', function () { self._setScale(self.scale + 0.2); });
     this.zoomOutBtn.addEventListener('click', function () { self._setScale(self.scale - 0.2); });
     this.zoomResetBtn.addEventListener('click', function () { self._setScale(1); });
-    // Click outside image to close
+    // Click outside image to close (but not when clicking controls or thumbnails)
     this.overlay.addEventListener('click', function (e) {
       var wrap = self.overlay.querySelector('.lightbox-img-wrap');
-      if (!wrap.contains(e.target) && !e.target.closest('.lightbox-arrow') && !e.target.closest('.lightbox-zoom')) {
+      var isArrow = e.target.closest('.lightbox-arrow');
+      var isZoom = e.target.closest('.lightbox-zoom');
+      var isThumb = e.target.closest('.lightbox-thumbs');
+      if (!wrap.contains(e.target) && !isArrow && !isZoom && !isThumb) {
         self.close();
       }
     });
@@ -178,16 +201,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var lightbox = new Lightbox();
 
-  // Delegate clicks on gallery tiles
+  // Delegate clicks on gallery tiles, founders portraits, and company logo
   document.addEventListener('click', function (e) {
-    var imgBox = e.target.closest('.gallery .tile .img-box');
+    var imgBox = e.target.closest('.gallery .tile .img-box, .section.company .img-xl, .section.company .portrait.img-box');
     if (!imgBox) return;
     var img = imgBox.querySelector('img');
     if (!img) return; // No image yet (placeholder)
-    var figure = imgBox.closest('figure.tile');
+    var holder = imgBox.closest('figure.tile') || imgBox; // figure for tiles, container div for logo/portrait
     var company = imgBox.closest('.section.company');
-    if (!figure || !company) return;
+    if (!holder || !company) return;
     e.preventDefault();
-    lightbox.openFromCompany(company, figure);
+    lightbox.openFromCompany(company, holder);
   });
 });
