@@ -1,4 +1,4 @@
-/* ---------- Root & Base ---------- */
+
 :root {
   --bg: #0a0f1f;
   --bg-2: #0f1730;
@@ -81,7 +81,7 @@ h2 {
   border: 0;
 }
 
-/* ---------- Header ---------- */
+
 .site-header {
   position: fixed;
   inset: 0 0 auto 0;
@@ -193,30 +193,39 @@ h2 {
     display: inline-flex;
   }
   .primary-nav {
-    position: absolute;
-    top: calc(var(--header-h) + 8px);
-    right: 4vw;
-    background: rgba(6, 10, 24, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    background: rgba(6, 10, 24, 0.95);
     backdrop-filter: blur(10px);
-    padding: 10px;
-    display: grid;
-    gap: 6px;
-    transform-origin: top right;
-    transform: scale(0.96);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transform: translateY(-100%);
     opacity: 0;
     pointer-events: none;
-    transition: 0.2s;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid var(--glass-border);
   }
   .primary-nav.open {
+    transform: translateY(0);
     opacity: 1;
-    transform: scale(1);
     pointer-events: auto;
+  }
+  .nav-link {
+    width: 100%;
+    text-align: center;
+    padding: 16px;
+    font-size: 18px;
+    border-radius: 12px;
+  }
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 }
 
-/* ---------- Hero ---------- */
+
 .hero {
   position: relative;
   min-height: 100vh;
@@ -309,7 +318,7 @@ h2 {
   box-shadow: 0 0 24px rgba(0, 234, 255, 0.5), 0 0 40px rgba(155, 92, 255, 0.45);
 }
 
-/* ---------- Empresas ---------- */
+
 .section.empresas {
   background: radial-gradient(
       1200px circle at -10% -20%,
@@ -383,9 +392,7 @@ h2 {
 .card:hover::before {
   opacity: 0.8;
 }
-/* Card logo box sizing is defined below (see final `.card .img-box`) */
 
-/* Image container: clean 3D box (no dashed lines) */
 .img-box {
   display: grid;
   place-items: center;
@@ -402,7 +409,7 @@ h2 {
   overflow: hidden;
 }
 
-/* Company detail pages */
+
 .company .img-xl {
   height: auto;
   min-height: 140px;
@@ -432,7 +439,7 @@ h2 {
   color: #fff;
 }
 
-/* Simple galleries for founders and consoles */
+
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -451,7 +458,7 @@ h2 {
   display: block;
   cursor: zoom-in;
 }
-/* Tile with caption: 3D card */
+
 .tile {
   display: grid;
   gap: 10px;
@@ -484,7 +491,7 @@ h2 {
   letter-spacing: 0.3px;
 }
 
-/* Founder media row: image next to info */
+
 .media-inline {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -510,7 +517,7 @@ h2 {
   display: block;
 }
 
-/* Center logos in company grid cards inside a clean 3D box */
+
 .card .img-box {
   display: grid;
   place-items: center;
@@ -530,12 +537,12 @@ h2 {
   object-position: center;
 }
 
-/* Wider container on company pages for bigger tiles */
+
 .section.company .container {
   width: min(var(--max-w), 96vw);
 }
 
-/* Larger tiles and tighter gaps on large screens */
+
 @media (min-width: 1200px) {
   .section.company .gallery {
     grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -554,7 +561,7 @@ h2 {
   }
 }
 
-/* ---------- Nosotros ---------- */
+
 .about-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
@@ -572,7 +579,7 @@ h2 {
   gap: 12px;
 }
 
-/* ---------- Lightbox (Full Image Viewer) ---------- */
+
 .lightbox {
   position: fixed;
   inset: 0;
@@ -718,7 +725,6 @@ h2 {
   box-shadow: 0 0 0 2px rgba(0, 234, 255, 0.4) inset;
 }
 
-/* Open animation */
 .lightbox.open .lightbox-img-wrap {
   animation: lbZoom 0.22s ease;
 }
@@ -735,15 +741,49 @@ h2 {
 
 @media (max-width: 900px) {
   .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .lightbox-img-wrap {
+    max-height: 70vh;
+    max-width: 95vw;
+  }
+  .lightbox-thumb {
+    width: 70px;
+    height: 70px;
+  }
+  .company .img-xl {
+    height: auto;
+    min-height: 120px;
+  }
+  .portrait.img-box {
+    width: 120px;
+    aspect-ratio: 3/4;
+  }
+  .media-inline {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .portrait {
+    width: 160px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
   }
   .lightbox-img-wrap {
     max-height: 60vh;
   }
   .lightbox-thumb {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
+  }
+  .company .img-xl {
+    min-height: 100px;
   }
 }
 .social-btn {
@@ -764,7 +804,7 @@ h2 {
   box-shadow: 0 0 20px rgba(0, 234, 255, 0.25), 0 0 28px rgba(155, 92, 255, 0.2);
 }
 
-/* ---------- Footer ---------- */
+
 .site-footer {
   border-top: 1px solid var(--glass-border);
   background: rgba(4, 8, 20, 0.8);
@@ -781,56 +821,106 @@ h2 {
   font-size: 14px;
 }
 
-/* ---------- Responsive ---------- */
+
+/* Tablets */
 @media (max-width: 900px) {
   .section {
-    padding: 80px 0;
+    padding: 60px 0;
   }
   .glass-card {
-    padding: 36px;
+    padding: 32px 24px;
   }
   .about-grid {
     grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .hero-content {
+    width: 95vw;
+    margin-top: -20px;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 48px);
+  }
+  .glass-card p {
+    font-size: 16px;
   }
 }
 
-/* Extra responsive tweaks for small screens */
+/* Mobile Large */
 @media (max-width: 720px) {
-  .card {
-    min-height: 500px;
-    padding: 36px 22px 20px;
-  }
-  .card .img-box {
-    height: 240px;
-  }
-  .card span {
-    font-size: 22px;
-  }
-}
-@media (max-width: 480px) {
-  .container {
-    width: min(var(--max-w), 96vw);
-  }
-  .card-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
+  .section {
+    padding: 48px 0;
   }
   .card {
-    min-height: 460px;
-    padding: 28px 18px 18px;
+    aspect-ratio: auto;
+    min-height: auto;
+    padding: 24px 18px;
   }
   .card .img-box {
-    height: 210px;
+    height: 220px;
   }
   .card span {
     font-size: 20px;
   }
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+  .footer-inner {
+    justify-content: center;
+    text-align: center;
+  }
 }
-@media (max-width: 360px) {
+
+/* Mobile Medium */
+@media (max-width: 480px) {
+  .container {
+    width: min(var(--max-w), 92vw);
+  }
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .glass-card {
+    padding: 24px 16px;
+  }
   .card {
-    min-height: 430px;
+    padding: 20px 16px;
   }
   .card .img-box {
-    height: 190px;
+    height: 200px;
+  }
+  .card span {
+    font-size: 18px;
+  }
+  .logo-text {
+    font-size: 14px;
+  }
+  .section {
+    padding: 40px 0;
+  }
+  .hero {
+    min-height: 90vh;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 360px) {
+  .glass-card {
+    padding: 20px 12px;
+  }
+  .card .img-box {
+    height: 180px;
+  }
+  .hero-content {
+    margin-top: 0;
+  }
+  .btn {
+    padding: 12px 16px;
+    font-size: 14px;
   }
 }
