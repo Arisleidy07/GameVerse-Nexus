@@ -44,8 +44,9 @@ a {
 }
 
 .container {
-  width: min(var(--max-w), 92vw);
+  width: 98vw;
   margin-inline: auto;
+  max-width: 100%;
 }
 .section {
   padding: 96px 0;
@@ -173,9 +174,59 @@ h2 {
   box-shadow: 0 0 12px rgba(0, 234, 255, 0.9);
 }
 
-/* Eliminamos el botón de menú ya que no lo necesitaremos */
 .nav-toggle {
   display: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1001;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  position: relative;
+  transition: 0.3s ease;
+}
+
+.nav-toggle span:before,
+.nav-toggle span:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transition: 0.3s ease;
+}
+
+.nav-toggle span:before {
+  top: -6px;
+}
+
+.nav-toggle span:after {
+  bottom: -6px;
+}
+
+.nav-toggle.active span {
+  background: transparent;
+}
+
+.nav-toggle.active span:before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.nav-toggle.active span:after {
+  transform: rotate(-45deg);
+  bottom: 0;
 }
 
 @media (max-width: 900px) {
@@ -191,13 +242,36 @@ h2 {
     font-size: 14px;
   }
 
+  .nav-toggle {
+    display: block;
+  }
+
   .primary-nav {
-    gap: 12px;
+    position: fixed;
+    inset: 0 0 0 20%;
+    background: rgba(6, 10, 24, 0.98);
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    padding: calc(var(--header-h) + 40px) 24px 24px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .primary-nav.active {
+    transform: translateX(0);
   }
 
   .nav-link {
-    padding: 6px 8px;
-    font-size: 14px;
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    display: none;
   }
 }
 @media (max-width: 480px) {
@@ -335,10 +409,14 @@ h2 {
 }
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  margin-top: 32px;
-  padding: 0 8px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  margin-top: 50px;
+  padding: 0 20px;
+  width: 100%;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card {
@@ -446,13 +524,26 @@ h2 {
 
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 6px;
-  margin-top: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+  padding: 0 15px;
 }
+
 .gallery .img-box {
-  height: auto;
-  aspect-ratio: 1 / 1;
+  height: 100%;
+  aspect-ratio: 16/9;
+  padding: 15px;
+  transition: transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+}
+
+.gallery .img-box:hover {
+  transform: scale(1.02);
+  border-color: rgba(0, 234, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 234, 255, 0.15);
 }
 .gallery .img-box img {
   width: 100%;
@@ -545,18 +636,40 @@ h2 {
 }
 
 .section.company .container {
-  width: min(var(--max-w), 96vw);
+  width: 98vw;
+  padding: 0 10px;
 }
 
 @media (min-width: 1200px) {
   .section.company .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 6px;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px 30px;
+    padding: 0 30px;
+  }
+
+  .card {
+    margin: 5px;
   }
 }
 @media (min-width: 1600px) {
   .section.company .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 50px 40px;
+    padding: 0 40px;
+    max-width: 1800px;
+  }
+
+  .card {
+    margin: 5px;
   }
 }
 
@@ -632,26 +745,67 @@ h2 {
   height: 100%;
 }
 .lightbox-img-wrap {
-  max-width: min(1200px, 90vw);
-  max-height: min(700px, 75vh);
-  width: fit-content;
-  height: fit-content;
+  max-width: min(1200px, 95vw);
+  max-height: min(700px, 80vh);
+  width: 100%;
+  height: 100%;
   display: grid;
   place-items: center;
   overflow: hidden;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: #000;
+  margin: 0 auto;
 }
+
 .lightbox-img {
-  max-width: min(1200px, 90vw);
-  max-height: min(700px, 75vh);
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
   object-position: center;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
   display: block;
+}
+
+@media (max-width: 768px) {
+  .lightbox-img-wrap {
+    max-width: 98vw;
+    max-height: 85vh;
+    border-radius: 8px;
+  }
+
+  .lightbox-controls {
+    padding: 0 10px;
+  }
+
+  .lightbox-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .lightbox-zoom {
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .lightbox-zoom button {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .lightbox-header {
+    padding: 8px 10px;
+  }
+
+  .lightbox-close {
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 14px;
+  }
 }
 .lightbox-controls {
   position: absolute;
@@ -892,60 +1046,89 @@ h2 {
 @media (max-width: 480px) {
   .container {
     width: min(var(--max-w), 92vw);
+    padding: 0 10px;
   }
+
   .card-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+    padding: 0 10px;
   }
+
   .glass-card {
     padding: 24px 16px;
+    margin: 0 10px;
   }
+
   .card {
-    padding: 16px 12px;
+    padding: 20px 15px;
+    min-height: 300px;
   }
+
   .card .img-box {
-    height: 180px;
-    padding: 12px;
+    height: 200px;
+    padding: 15px;
   }
+
   .card .img-box img {
-    max-height: 150px;
+    max-height: 170px;
   }
+
   .card span {
-    font-size: 16px;
+    font-size: 18px;
   }
+
   .logo-text {
-    font-size: 14px;
+    font-size: 15px;
   }
+
   .section {
     padding: 40px 0;
   }
+
   .hero {
     min-height: 90vh;
   }
 
+  .section.company .container {
+    padding: 0 15px;
+  }
+
   .company .img-xl {
     height: auto;
-    max-height: 160px;
-    padding: 12px;
+    min-height: 180px;
+    padding: 15px;
+    margin: 15px auto;
   }
 
   .company .img-xl img {
-    max-height: 130px;
+    max-height: 150px;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 0 10px;
   }
 
   .gallery .img-box {
-    height: 160px;
-    padding: 10px;
+    height: 180px;
+    padding: 12px;
   }
 
   .gallery .img-box img {
-    max-height: 140px;
+    max-height: 160px;
   }
 
   .portrait.img-box {
-    height: 200px;
-    width: 150px;
+    height: 220px;
+    width: 165px;
     margin: 0 auto;
+  }
+
+  .company-details {
+    padding: 0 15px;
   }
 }
 
