@@ -173,117 +173,59 @@ h2 {
   box-shadow: 0 0 12px rgba(0, 234, 255, 0.9);
 }
 
+/* Eliminamos el botón de menú ya que no lo necesitaremos */
 .nav-toggle {
   display: none;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  color: #fff;
-  position: relative;
-  padding: 8px;
-}
-
-.nav-toggle:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.nav-toggle .bar {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: #fff;
-  margin: 4px auto;
-  border-radius: 2px;
-  transition: 0.3s ease;
-}
-
-/* Animación del menú hamburguesa */
-.nav-toggle.open .bar:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
-}
-
-.nav-toggle.open .bar:nth-child(2) {
-  opacity: 0;
-}
-
-.nav-toggle.open .bar:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
 }
 
 @media (max-width: 900px) {
-  .nav-toggle {
-    display: inline-flex;
-    z-index: 1001;
-  }
-  
-  .primary-nav {
-    position: fixed;
-    top: var(--header-h);
-    left: 0;
-    right: 0;
-    background: rgba(6, 10, 24, 0.98);
-    backdrop-filter: blur(12px);
-    padding: 20px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  :root {
+    --header-h: 60px;
   }
 
-  .primary-nav.open {
-    display: flex;
-  }
-
-  .nav-link {
-    width: 100%;
-    text-align: center;
-    padding: 15px;
-    font-size: 18px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .nav-link.active {
-    background: rgba(0, 234, 255, 0.1);
-    border-color: rgba(0, 234, 255, 0.3);
-  }
-
-  .nav-link::after {
-    display: none;
-  }
-}@media (max-width: 480px) {
   .nav {
-    padding: 0 16px;
+    padding: 0 12px;
   }
-  
+
   .logo-text {
-    font-size: 15px;
+    font-size: 14px;
   }
-  
+
   .primary-nav {
-    padding: 16px;
+    gap: 12px;
   }
 
   .nav-link {
-    padding: 14px;
-    font-size: 16px;
-    margin-bottom: 4px;
+    padding: 6px 8px;
+    font-size: 14px;
   }
-  
-  .nav-toggle {
-    width: 40px;
-    height: 40px;
+}
+@media (max-width: 480px) {
+  :root {
+    --header-h: 50px;
+  }
+
+  .nav {
+    padding: 0 10px;
+  }
+
+  .logo-text {
+    font-size: 13px;
+  }
+
+  .primary-nav {
+    gap: 8px;
+  }
+
+  .nav-link {
+    padding: 4px 6px;
+    font-size: 13px;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    bottom: -4px;
+    height: 1px;
   }
 }
 
@@ -581,20 +523,25 @@ h2 {
 .card .img-box {
   display: grid;
   place-items: center;
-  height: auto;
-  aspect-ratio: 1 / 1;
   width: 100%;
+  height: 240px;
+  padding: 20px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
 }
+
 .card .img-box img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center;
+  transition: transform 0.3s ease;
+  max-height: 200px;
+  padding: 10px;
 }
 
 .section.company .container {
@@ -910,13 +857,17 @@ h2 {
   .card {
     aspect-ratio: auto;
     min-height: auto;
-    padding: 24px 18px;
+    padding: 20px 16px;
   }
   .card .img-box {
-    height: 220px;
+    height: 200px;
+    padding: 15px;
+  }
+  .card .img-box img {
+    max-height: 170px;
   }
   .card span {
-    font-size: 20px;
+    font-size: 18px;
   }
   .btn {
     width: 100%;
@@ -926,6 +877,16 @@ h2 {
     justify-content: center;
     text-align: center;
   }
+
+  .company .img-xl {
+    height: auto;
+    max-height: 180px;
+    padding: 15px;
+  }
+
+  .company .img-xl img {
+    max-height: 150px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -934,19 +895,23 @@ h2 {
   }
   .card-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
   }
   .glass-card {
     padding: 24px 16px;
   }
   .card {
-    padding: 20px 16px;
+    padding: 16px 12px;
   }
   .card .img-box {
-    height: 200px;
+    height: 180px;
+    padding: 12px;
+  }
+  .card .img-box img {
+    max-height: 150px;
   }
   .card span {
-    font-size: 18px;
+    font-size: 16px;
   }
   .logo-text {
     font-size: 14px;
@@ -956,6 +921,31 @@ h2 {
   }
   .hero {
     min-height: 90vh;
+  }
+
+  .company .img-xl {
+    height: auto;
+    max-height: 160px;
+    padding: 12px;
+  }
+
+  .company .img-xl img {
+    max-height: 130px;
+  }
+
+  .gallery .img-box {
+    height: 160px;
+    padding: 10px;
+  }
+
+  .gallery .img-box img {
+    max-height: 140px;
+  }
+
+  .portrait.img-box {
+    height: 200px;
+    width: 150px;
+    margin: 0 auto;
   }
 }
 
